@@ -7,7 +7,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
 /**
- * @author Niko Köbler, https://www.n-k.de, @dasniko
+ * @author Mriganka Paul
  */
 public class UserMustBeApprovedActionFactory implements RequiredActionFactory {
 

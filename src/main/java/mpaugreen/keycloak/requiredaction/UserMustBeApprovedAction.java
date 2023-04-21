@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 import java.util.function.Consumer;
 
 /**
- * @author Niko Köbler, https://www.n-k.de, @dasniko
+ * @author Mriganka Paul
  */
 public class UserMustBeApprovedAction implements RequiredActionProvider {
 
