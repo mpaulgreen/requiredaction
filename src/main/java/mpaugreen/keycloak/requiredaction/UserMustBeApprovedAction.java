@@ -4,8 +4,13 @@ import org.keycloak.authentication.InitiatedActionSupport;
 import org.keycloak.authentication.RequiredActionContext;
 import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.forms.login.LoginFormsProvider;
+import org.keycloak.models.GroupModel;
+
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 import java.util.function.Consumer;
+
+
 
 /**
  * @author Mriganka Paul
@@ -23,18 +28,32 @@ public class UserMustBeApprovedAction implements RequiredActionProvider {
 
 	@Override
 	public void evaluateTriggers(RequiredActionContext context) {
-		if (context.getUser().getFirstAttribute(ADMIN_APPROVE_FIELD) == null) {
+		if (!(isGroupApproved(context)  || isUserApproved(context))) {
 			context.getUser().addRequiredAction(PROVIDER_ID);
 		}
 	}
 
 	@Override
 	public void requiredActionChallenge(RequiredActionContext context) {
-		if (context.getUser().getFirstAttribute(ADMIN_APPROVE_FIELD) == null) {
+		if (!(isGroupApproved(context)  || isUserApproved(context))) {
 			context.challenge(createForm(context, null));
 		} else {
 			context.success();
 		}
+	}
+
+	private boolean isUserApproved(RequiredActionContext context) {
+		return context.getUser().getFirstAttribute(ADMIN_APPROVE_FIELD) != null;
+	}
+
+	private boolean isGroupApproved(RequiredActionContext context) {
+		Optional<GroupModel> gm = context.getUser()
+				.getGroupsStream()
+				.parallel()
+				.filter(groupModel -> groupModel.getFirstAttribute(ADMIN_APPROVE_FIELD) != null)
+				.findAny();
+
+		return gm.isEmpty();
 	}
 
 	@Override
